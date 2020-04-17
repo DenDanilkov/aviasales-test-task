@@ -1,8 +1,26 @@
 body {
   margin: 0;
+  background: #f3f7fa;
+  height: 100vh;
+
+  box-sizing: border-box;
 }
 
 .app {
-  background-color: green;
-  height: 100vh;
+  flex-wrap: wrap;
+  max-width: 735px;
+  display: flex;
+  margin: 0 auto;
+}
+
+.main {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.content {
+  max-width: 503px;
+  flex-basis: 100%;
+  margin-left: 20px;
 }
