@@ -9,7 +9,7 @@ const ControlsPanel = () => {
       <div className={styles.title}>Количество пересадок</div>
       <div className={styles['control-items']}>
         {controlsItems.map((item, index) => (
-          <ControlsItem name={item} key={index} />
+          <ControlsItem name={item} key={index} labelNumber={index} />
         ))}
       </div>
     </div>
