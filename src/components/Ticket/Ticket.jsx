@@ -26,7 +26,7 @@ const Ticket = ({ price, icon, ticketSections }) => {
 };
 
 Ticket.propTypes = {
-  price: PropTypes.string,
+  price: PropTypes.number,
   icon: PropTypes.string,
   ticketSections: PropTypes.array,
 };
