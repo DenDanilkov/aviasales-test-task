@@ -12,12 +12,7 @@ const Ticket = ({ price, icon, ticketSections }) => {
       </div>
 
       <div className={styles.sections}>
-        {ticketSections.map((item, index) => {
-          const data = Object.entries(item);
-
-          const header = data[0][0];
-          const content = data[0][1];
-
+        {Object.values(ticketSections).map(([header, content], index) => {
           return <TicketSection header={header} content={content} key={index} />;
         })}
       </div>

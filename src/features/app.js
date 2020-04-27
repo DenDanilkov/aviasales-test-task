@@ -10,6 +10,8 @@ export const ticketsFeature = createSlice({
     rawTickets: [],
     errors: [],
     appTicketsData: [],
+    activeFilters: [],
+    sortMode: 'price',
   },
   reducers: {
     fetchTicketsRequest: state => {
@@ -22,9 +24,9 @@ export const ticketsFeature = createSlice({
     setTicketsData: (state, { payload }) => {
       state.appTicketsData = payload;
       state.errors = [];
+      state.loading = false;
     },
     fetchAllChunksSuccess: state => {
-      state.loading = false;
       state.errors = [];
     },
     fetchTicketsFail: (state, action) => {
@@ -71,27 +73,45 @@ function* retrieveTicketsChunks({ payload }) {
     yield put(fetchAllChunksSuccess());
     const rawTicketsData = yield select(state => state.tickets.rawTickets);
     const readyAppData = rawTicketsData.map(({ segments, carrier, ...rest }) => {
-      const icon = `pics.avs.io/99/36/${carrier}.png`;
+      const icon = `//pics.avs.io/99/36/${carrier}.png`;
       const [forward, backward] = segments;
       const totalTime = forward.duration + backward.duration;
       const changePlanesAmount = forward.stops.length + backward.stops.length;
       const ticketSections = {};
-      ticketSections[
-        dateFormater(forward.date, forward.duration)
-      ] = `${forward.origin}-${forward.destination}`;
-      ticketSections[minutesToHours(forward.duration)] = 'В ПУТИ';
-      ticketSections[`${forward.stops.length} пересадок`] = `${forward.stops.join(' ')}`;
 
-      ticketSections[
-        dateFormater(backward.date, backward.duration)
-      ] = `${backward.origin}-${backward.destination}`;
-      ticketSections[minutesToHours(backward.duration)] = 'В ПУТИ';
-      ticketSections[`${backward.stops.length} пересадок`] = `${backward.stops.join(' ')}`;
+      ticketSections['from-destination'] = [
+        dateFormater(forward.date, forward.duration),
+        `${forward.origin}-${forward.destination}`,
+      ];
+      ticketSections['from-duration'] = [minutesToHours(forward.duration), 'В ПУТИ'];
+
+      ticketSections['from-changes'] = [
+        `${forward.stops.join(', ')}`,
+        `${forward.stops.length} пересадок`,
+      ];
+
+      ticketSections['backward-destination'] = [
+        dateFormater(backward.date, backward.duration),
+        `${backward.origin}-${backward.destination}`,
+      ];
+      ticketSections['backward-duration'] = [minutesToHours(backward.duration), 'В ПУТИ'];
+
+      ticketSections['backward-changes'] = [
+        `${backward.stops.join(', ')}`,
+        `${backward.stops.length} пересадок`,
+      ];
+
+      //   ticketSections[
+      //     dateFormater(backward.date, backward.duration)
+      //   ] = `${backward.origin}-${backward.destination}`;
+      //   ticketSections[minutesToHours(backward.duration)] = 'В ПУТИ';
+      //   ticketSections[`${backward.stops.length} пересадок`] = `${backward.stops.join(' ')}`;
+
       return { icon, totalTime, changePlanesAmount, ticketSections, ...rest };
     });
     yield put(setTicketsData(readyAppData));
   } catch (e) {
-    if (e.message == 'Request failed with status code 500') {
+    if (e.message === 'Request failed with status code 500') {
       yield put(fetchTicketsFail(e.message));
       yield call(fetchTickets, { payload: searchId });
     }
