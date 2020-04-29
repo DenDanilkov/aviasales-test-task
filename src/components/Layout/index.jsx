@@ -1,10 +1,11 @@
 import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import Header from '../Header';
 import ControlsPanel from '../ControlsPanel';
 import Tabs from '../Tabs';
 import Ticket from '../Ticket/Ticket';
 // import { mockedTickets } from '../../mockedData/mockedTickets';
-import { useDispatch, useSelector } from 'react-redux';
+
 import styles from './styles.module.scss';
 import { fetchTicketsRequest } from '../../features/app';
 import Loading from '../Loading';

@@ -32,6 +32,16 @@ export const ticketsFeature = createSlice({
     fetchTicketsFail: (state, action) => {
       state.errors.push(action);
     },
+    manageTicketsFilter: (state, { payload: { activeFiltersAction, labelNumber } }) => {
+      if (activeFiltersAction === 'delete') {
+        state.activeFilters = state.activeFilters.filter(item => item !== labelNumber);
+      } else if (activeFiltersAction === 'add') {
+        state.activeFilters.push(labelNumber);
+      }
+    },
+    manageTicketsAllFilters: (state, action) => {
+      state.activeFilters = action.payload;
+    },
   },
 });
 
@@ -41,6 +51,8 @@ export const {
   fetchAllChunksSuccess,
   fetchTicketsFail,
   setTicketsData,
+  manageTicketsFilter,
+  manageTicketsAllFilters,
 } = ticketsFeature.actions;
 export default ticketsFeature.reducer;
 
@@ -100,13 +112,6 @@ function* retrieveTicketsChunks({ payload }) {
         `${backward.stops.join(', ')}`,
         `${backward.stops.length} пересадок`,
       ];
-
-      //   ticketSections[
-      //     dateFormater(backward.date, backward.duration)
-      //   ] = `${backward.origin}-${backward.destination}`;
-      //   ticketSections[minutesToHours(backward.duration)] = 'В ПУТИ';
-      //   ticketSections[`${backward.stops.length} пересадок`] = `${backward.stops.join(' ')}`;
-
       return { icon, totalTime, changePlanesAmount, ticketSections, ...rest };
     });
     yield put(setTicketsData(readyAppData));
@@ -122,24 +127,6 @@ function* subscribe(id) {
   const response = yield call(ticketsApi.getTickets, id);
   yield put(fetchTicketsChunkSuccess(response.tickets));
   return response.stop;
-  // if (e.status == 500) {
-  //   // Status 502 is a connection timeout error,
-  //   // may happen when the connection was pending for too long,
-  //   // and the remote server or a proxy closed it
-  //   // let's reconnect
-  //   await subscribe();
-  // } else if (response.status != 200) {
-  //   // An error - let's show it
-  //   showMessage(response.statusText);
-  //   // Reconnect in one second
-  //   await new Promise(resolve => setTimeout(resolve, 1000));
-  //   await subscribe();
-  // } else {
-  //   // Get and show the message
-  //   let message = await response.text();
-  //   showMessage(message);
-  //   // Call subscribe() again to get the next message
-  //   await subscribe();
 }
 
 export function* ticketsSaga() {
